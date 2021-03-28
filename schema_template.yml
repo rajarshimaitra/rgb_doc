@@ -1,0 +1,266 @@
+---
+rgb_features: ""
+root_id: sch1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq529g5z
+field_types:
+  # NAME
+  0:
+    string: 8
+  # TICKER
+  1:
+    string: 256
+  # Contract String
+  2:
+    string: 65535
+  # Precision
+  3:
+    unsigned:
+      - bit8
+      - 0
+      - 18
+  # Time stamp
+  4:
+    integer:
+      - bit64
+      - 1602340666
+      - 9223372036854775807
+  # Issued SUpply
+  160:
+    unsigned:
+      - bit64
+      - 0
+      - 18446744073709551615
+  # Burden Supply
+  176:
+    unsigned:
+      - bit64
+      - 0
+      - 18446744073709551615
+  # Burn UTXO 
+  177: txoutpoint
+  # History Proof
+  178:
+    bytes: 65535
+  # History Proof Format
+  179:
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+owned_right_types:
+  # Renomination
+  1:
+    format: declarative
+    abi: {}
+  # Inflation
+  160:
+    format:
+      custom_data:
+        unsigned:
+          - bit64
+          - 0
+          - 18446744073709551615
+    abi: {}
+  # Assets
+  161:
+    format:
+      discrete_finite_field: unsigned64bit
+    abi:
+      validate:
+        embedded: no_inflation_by_sum
+  # Epoch
+  170:
+    format: declarative
+    abi: {}
+  # Burn and Replace
+  171:
+    format: declarative
+    abi: {}
+public_right_types: []
+
+genesis:
+  metadata:
+    # Ticker
+    0: once
+    # Name
+    1: once
+    #Contract String
+    2: noneOrOnce
+    #Precision
+    3: once
+    # Timestamp
+    4: once
+    #Issued Supply
+    160: once
+  owned_rights:
+    # Renomination
+    1: noneOrOnce
+    # Inflation
+    160: noneOrMore
+    # Assets
+    161: noneOrMore
+    # Epoch
+    170: noneOrOnce
+  public_rights: []
+  abi: {}
+
+
+extensions: {}
+
+
+transitions:
+
+  # Transfer
+  0:
+    metadata: {}
+    closes:
+      # Asset
+      161: onceOrMore
+    owned_rights:
+      # Asset
+      161: noneOrMore
+    public_rights: []
+    abi: {}
+
+
+  # Renomination
+  16:
+    metadata:
+      # Ticker
+      0: noneOrOnce
+      # Name
+      1: noneOrOnce
+      # Contract Text
+      2: noneOrOnce
+      # Precision
+      3: noneOrOnce
+    closes:
+      # Renomination
+      1: once
+    owned_rights:
+      # Renomination
+      1: noneOrOnce
+    public_rights: []
+    abi: {}
+
+  # Issue    
+  160:
+    metadata:
+      # Issued Supply
+      160: once
+    closes:
+      # Inflation
+      160: onceOrMore
+    owned_rights:
+      # Inflation
+      160: noneOrMore
+      # Asset
+      161: noneOrMore
+      #Epoch
+      170: noneOrOnce
+    public_rights: []
+    abi:
+      validate:
+        embedded: fungible_inflation
+
+  # Epoch
+  161:
+    metadata: {}
+    closes:
+      # Epoch
+      170: once
+    owned_rights:
+      # Epoch
+      170: noneOrOnce
+      # Burn and Replace
+      171: noneOrOnce
+    public_rights: []
+    abi: {}
+
+  # Burn
+  162:
+    metadata:
+      # Burned SUpply 
+      176: once
+      # Burned Utxo
+      177: onceOrMore
+      # History Proof
+      178: noneOrMore
+      # History Proof Format
+      179: once
+    closes:
+      # Burn and Replace
+      171: once
+    owned_rights:
+      # Burn and Replace
+      171: noneOrOnce
+    public_rights: []
+    abi:
+      validate:
+        embedded: proof_of_burn
+
+  # Burn and Replace      
+  163:
+    metadata:
+      # Burned Supply
+      176: once
+      # Burned Utxo
+      177: onceOrMore
+      # History Proof
+      178: noneOrMore
+      # History Proof Format
+      179: once
+    closes:
+      # Burn and Replace
+      171: once
+    owned_rights:
+      # Asset
+      161: onceOrMore
+      # Burn and Replace
+      171: noneOrOnce
+    public_rights: []
+    abi:
+      validate:
+        embedded: proof_of_burn
+
+  # Right Split    
+  240:
+    metadata: {}
+    closes:
+      # Renomination
+      1: noneOrOnce
+      # Inflation
+      160: noneOrMore
+      # Asset
+      161: noneOrMore
+      # Epoch
+      170: noneOrOnce
+      # Burn and Replace
+      171: noneOrMore
+    owned_rights:
+      # Renomination
+      1: noneOrOnce
+      # Inflation
+      160: noneOrMore
+      # Asset
+      161: noneOrMore
+      # Epoch
+      170: noneOrOnce
+      # Burn and Replace
+      171: noneOrMore
+    public_rights: []
+    abi:
+      validate:
+        embedded: rights_split
